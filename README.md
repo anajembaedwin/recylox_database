@@ -1,14 +1,14 @@
 This is a basic template to start with polybase
 
-![Main_iamge](https://github.com/PriyathamVarma/polybase_basic_template_js/blob/main/public/Polybase.png)
+![Main_iamge](https://github.com/anajembaedwin/recylox_database/blob/main/public/Polybase.png)
 
 ## Getting Started
 
 - Git clone this repo
 
-- npm install
+- yarn install
 
-- npm run dev
+- yarn run dev
 
 - node callSchemas.js(in a new terminal)
 
