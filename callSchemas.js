@@ -3,7 +3,7 @@ const axios = require("axios");
 
 // List all your API endpoints here
 const apiEndpoints = [
-  "/api/schemas/SampleSchema",
+  // "/api/schemas/SampleSchema",
   "/api/schemas/reccoinTestSchema",
 
   // Add more endpoints as needed
