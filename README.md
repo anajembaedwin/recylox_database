@@ -1,4 +1,4 @@
-This is a basic template to start with polybase
+This project uses the Next starter template: polybase_basic_template_js, from ![PriyathamVarma](https://github.com/PriyathamVarma/polybase_basic_template_js)
 
 ![Main_iamge](https://github.com/anajembaedwin/recylox_database/blob/main/public/Polybase.png)
 
