@@ -1,12 +1,30 @@
+import { useEffect, useState } from "react";
+import * as polybase from "@polybase/client";
+import * as polybaseAuth from "@polybase/auth";
 import Head from "next/head";
-import Image from "next/image";
-import axios from "axios";
-import db from "../polybase/config.jsx";
 
 export default function Home() {
-  // Methods
+  const [auth, setAuth] = useState(null);
 
-  const formSubmitted = async (event) => {
+  useEffect(() => {
+    const client = new polybase.Polybase();
+    const auth = new polybaseAuth.Auth();
+
+    client.signer(async (data) => {
+      console.log("sign", data);
+      return {
+        h: "eth-personal-sign",
+        sig: await auth.ethPersonalSign(data),
+      };
+    });
+
+    auth.onAuthUpdate((auth) => {
+      console.log("auth", auth);
+      setAuth(auth);
+    });
+  }, []);
+
+  const add = async (event) => {
     event.preventDefault();
 
     const name = event.target.name.value;
@@ -16,11 +34,19 @@ export default function Home() {
 
     console.log(name, email, walletAddress, verification);
 
-    // Submitting the data
-    const id = Math.floor(Math.random() * 1000000).toString(); // This can be changed to a more unique id
-    const submittingData = await db
-      .collection("User") // Change the collection name to "Company" if needed
-      .create([id, name, email, walletAddress, verification]);
+    const client = new polybase.Polybase();
+
+    document.getElementById("add").innerText = "Loading...";
+
+    const res = await client.collection("User").create([
+      Math.floor(Math.random() * 1000000).toString(),
+      name,
+      email,
+      walletAddress,
+      verification,
+    ]);
+
+    document.getElementById("add").innerText = JSON.stringify(res.data, null, 2);
   };
 
   return (
@@ -39,12 +65,9 @@ export default function Home() {
         </div>
 
         <div>
-          <form onSubmit={formSubmitted} className="max-w-md mx-auto">
+          <form onSubmit={add} className="max-w-md mx-auto">
             <div className="mb-4">
-              <label
-                htmlFor="name"
-                className="block mb-2 font-semibold text-gray-700"
-              >
+              <label htmlFor="name" className="block mb-2 font-semibold text-gray-700">
                 Name
               </label>
               <input
@@ -56,10 +79,7 @@ export default function Home() {
             </div>
 
             <div className="mb-4">
-              <label
-                htmlFor="email"
-                className="block mb-2 font-semibold text-gray-700"
-              >
+              <label htmlFor="email" className="block mb-2 font-semibold text-gray-700">
                 Email
               </label>
               <input
@@ -92,10 +112,7 @@ export default function Home() {
                 name="verification"
                 className="mr-2"
               />
-              <label
-                htmlFor="verification"
-                className="font-semibold text-gray-700"
-              >
+              <label htmlFor="verification" className="font-semibold text-gray-700">
                 Verification
               </label>
             </div>
@@ -106,6 +123,57 @@ export default function Home() {
               className="w-full px-4 py-2 text-white bg-indigo-500 rounded-md hover:bg-indigo-600 focus:outline-none"
             />
           </form>
+        </div>
+
+        <div>
+          <h3>Sign In</h3>
+          <button onClick={signIn}>Sign In</button>
+          <button onClick={() => signIn(true)}>Sign In (Force)</button>
+          <button onClick={signOut}>Sign Out</button>
+          <code>
+            <pre id="auth">Auth: {auth ? JSON.stringify(auth, null, 2) : "loading..."}</pre>
+          </code>
+        </div>
+
+        <div>
+          <h3>Ethereum Personal Sign</h3>
+          <input id="input" defaultValue="Hello World" />
+          <button onClick={sign}>Sign</button>
+          <code>
+            <pre id="signed"></pre>
+          </code>
+        </div>
+
+        <div>
+          <h3>Add Record</h3>
+          <button onClick={add}>Add</button>
+          <code>
+            <pre id="add"></pre>
+          </code>
+        </div>
+
+        <div>
+          <h3>Update Record</h3>
+          <input id="record" defaultValue="" placeholder="record id" />
+          <input id="name" defaultValue="" placeholder="name" />
+          <button onClick={update}>Update</button>
+          <code>
+            <pre id="update"></pre>
+          </code>
+        </div>
+
+        <div>
+          <h3>Useful Links</h3>
+          <a href="https://polybase.xyz/docs" target="_blank" rel="noopener noreferrer">
+            Docs
+          </a>
+          <a
+            href="https://explorer.testnet.polybase.xyz"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Explorer
+          </a>
         </div>
       </main>
     </div>
@@ -127,9 +195,12 @@ export default function Home() {
 
 
 
+
+
+
 // import Head from "next/head";
-// import Image from "next/image";
-// import axios from "axios";
+// // import Image from "next/image";
+// // import axios from "axios";
 // import db from "../polybase/config.jsx";
 
 // export default function Home() {
@@ -139,15 +210,17 @@ export default function Home() {
 //     event.preventDefault();
 
 //     const name = event.target.name.value;
-//     const age = parseInt(event.target.age.value);
+//     const email = event.target.email.value;
+//     const walletAddress = event.target.walletAddress.value;
+//     const verification = event.target.verification.checked;
 
-//     console.log(name, age);
+//     console.log(name, email, walletAddress, verification);
 
 //     // Submitting the data
 //     const id = Math.floor(Math.random() * 1000000).toString(); // This can be changed to a more unique id
 //     const submittingData = await db
-//       .collection("SampleCollection")
-//       .create([id, name, age]);
+//       .collection("User") // Change the collection name to "Company" if needed
+//       .create([id, name, email, walletAddress, verification]);
 //   };
 
 //   return (
@@ -184,17 +257,47 @@ export default function Home() {
 
 //             <div className="mb-4">
 //               <label
-//                 htmlFor="age"
+//                 htmlFor="email"
 //                 className="block mb-2 font-semibold text-gray-700"
 //               >
-//                 Age
+//                 Email
 //               </label>
 //               <input
-//                 type="number"
-//                 id="age"
-//                 name="age"
+//                 type="email"
+//                 id="email"
+//                 name="email"
 //                 className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
 //               />
+//             </div>
+
+//             <div className="mb-4">
+//               <label
+//                 htmlFor="walletAddress"
+//                 className="block mb-2 font-semibold text-gray-700"
+//               >
+//                 Wallet Address
+//               </label>
+//               <input
+//                 type="text"
+//                 id="walletAddress"
+//                 name="walletAddress"
+//                 className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
+//               />
+//             </div>
+
+//             <div className="mb-4">
+//               <input
+//                 type="checkbox"
+//                 id="verification"
+//                 name="verification"
+//                 className="mr-2"
+//               />
+//               <label
+//                 htmlFor="verification"
+//                 className="font-semibold text-gray-700"
+//               >
+//                 Verification
+//               </label>
 //             </div>
 
 //             <input
@@ -208,3 +311,100 @@ export default function Home() {
 //     </div>
 //   );
 // }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// // import Head from "next/head";
+// // import Image from "next/image";
+// // import axios from "axios";
+// // import db from "../polybase/config.jsx";
+
+// // export default function Home() {
+// //   // Methods
+
+// //   const formSubmitted = async (event) => {
+// //     event.preventDefault();
+
+// //     const name = event.target.name.value;
+// //     const age = parseInt(event.target.age.value);
+
+// //     console.log(name, age);
+
+// //     // Submitting the data
+// //     const id = Math.floor(Math.random() * 1000000).toString(); // This can be changed to a more unique id
+// //     const submittingData = await db
+// //       .collection("SampleCollection")
+// //       .create([id, name, age]);
+// //   };
+
+// //   return (
+// //     <div>
+// //       <Head>
+// //         <title>Create Next App with Polybase</title>
+// //         <meta name="description" content="Generated by create next app" />
+// //         <link rel="icon" href="/favicon.ico" />
+// //       </Head>
+
+// //       <main className="flex flex-col items-center justify-center h-screen">
+// //         <div>
+// //           <h1 className="font-bold mb-5 border-8 border-indigo-500 p-5">
+// //             Polybase + Next.js App starter template
+// //           </h1>
+// //         </div>
+
+// //         <div>
+// //           <form onSubmit={formSubmitted} className="max-w-md mx-auto">
+// //             <div className="mb-4">
+// //               <label
+// //                 htmlFor="name"
+// //                 className="block mb-2 font-semibold text-gray-700"
+// //               >
+// //                 Name
+// //               </label>
+// //               <input
+// //                 type="text"
+// //                 id="name"
+// //                 name="name"
+// //                 className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
+// //               />
+// //             </div>
+
+// //             <div className="mb-4">
+// //               <label
+// //                 htmlFor="age"
+// //                 className="block mb-2 font-semibold text-gray-700"
+// //               >
+// //                 Age
+// //               </label>
+// //               <input
+// //                 type="number"
+// //                 id="age"
+// //                 name="age"
+// //                 className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
+// //               />
+// //             </div>
+
+// //             <input
+// //               type="submit"
+// //               value="Submit"
+// //               className="w-full px-4 py-2 text-white bg-indigo-500 rounded-md hover:bg-indigo-600 focus:outline-none"
+// //             />
+// //           </form>
+// //         </div>
+// //       </main>
+// //     </div>
+// //   );
+// // }

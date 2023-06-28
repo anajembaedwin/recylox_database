@@ -11,35 +11,54 @@ const apiEndpoints = [
   {
     method: "POST",
     endpoint: "/api/schemas/reccoinTestSchema",
-    data: {
-      collection: "User", // or "Company"
-      id: "123",
-      name: "John Doe",
-      email: "john@example.com",
-      walletAddress: "0x123456789",
-      verification: true,
+    data: async () => {
+      // Retrieve form data
+      const name = document.getElementById("name").value;
+      const email = document.getElementById("email").value;
+      const walletAddress = document.getElementById("walletAddress").value;
+      const verification = document.getElementById("verification").checked;
+
+      // Return form data
+      return {
+        name,
+        email,
+        walletAddress,
+        verification,
+      };
     },
   },
   // PUT request to update existing data in the database
   {
     method: "PUT",
     endpoint: "/api/schemas/reccoinTestSchema",
-    data: {
-      collection: "User", // or "Company"
-      id: "123",
-      name: "John Doe",
-      email: "john.doe@example.com",
-      walletAddress: "0x987654321",
-      verification: false,
+    data: async () => {
+      // Retrieve form data
+      const name = document.getElementById("name").value;
+      const email = document.getElementById("email").value;
+      const walletAddress = document.getElementById("walletAddress").value;
+      const verification = document.getElementById("verification").checked;
+
+      // Return form data
+      return {
+        name,
+        email,
+        walletAddress,
+        verification,
+      };
     },
   },
   // DELETE request to delete data from the database
   {
     method: "DELETE",
     endpoint: "/api/schemas/reccoinTestSchema",
-    data: {
-      collection: "User", // or "Company"
-      id: "123",
+    data: async () => {
+      // Retrieve form data
+      const id = document.getElementById("id").value;
+
+      // Return form data
+      return {
+        id,
+      };
     },
   },
   // Add more endpoints as needed
@@ -52,7 +71,7 @@ async function callSchemas() {
       const config = { method, url: `http://localhost:3000${apiEndpoint}` };
 
       if (data) {
-        config.data = data;
+        config.data = await data(); // Call the data function to get the form data
       }
 
       const response = await axios(config);
@@ -65,6 +84,92 @@ async function callSchemas() {
 }
 
 callSchemas();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// const axios = require("axios");
+
+// // List all your API endpoints here
+// const apiEndpoints = [
+//   // GET request to fetch data from the database
+//   {
+//     method: "GET",
+//     endpoint: "/api/schemas/reccoinTestSchema",
+//   },
+//   // POST request to store new data in the database
+//   {
+//     method: "POST",
+//     endpoint: "/api/schemas/reccoinTestSchema",
+//     data: {
+//       // collection: "User", // or "Company"
+//       id: "123",
+//       name: "John Doe",
+//       email: "john@example.com",
+//       walletAddress: "0x123456789",
+//       verification: true,
+//     },
+//   },
+//   // PUT request to update existing data in the database
+//   {
+//     method: "PUT",
+//     endpoint: "/api/schemas/reccoinTestSchema",
+//     data: {
+//       // collection: "User", // or "Company"
+//       id: "123",
+//       name: "John Doe",
+//       email: "john.doe@example.com",
+//       walletAddress: "0x987654321",
+//       verification: false,
+//     },
+//   },
+//   // DELETE request to delete data from the database
+//   {
+//     method: "DELETE",
+//     endpoint: "/api/schemas/reccoinTestSchema",
+//     data: {
+//       // collection: "User", // or "Company"
+//       id: "123",
+//     },
+//   },
+//   // Add more endpoints as needed
+// ];
+
+// async function callSchemas() {
+//   try {
+//     for (const endpoint of apiEndpoints) {
+//       const { method, endpoint: apiEndpoint, data } = endpoint;
+//       const config = { method, url: `http://localhost:3000${apiEndpoint}` };
+
+//       if (data) {
+//         config.data = data;
+//       }
+
+//       const response = await axios(config);
+//       console.log(`API called: ${apiEndpoint}`);
+//       console.log(response.data); // Output or process the response data as needed
+//     }
+//   } catch (error) {
+//     console.error("Error calling APIs:", error);
+//   }
+// }
+
+// callSchemas();
 
 
 

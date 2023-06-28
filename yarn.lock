@@ -3432,6 +3432,7 @@ __metadata:
   resolution: "polybase_template@workspace:."
   dependencies:
     "@polybase/client": ^0.6.2
+    "@polybase/eth": ^0.6.2
     "@types/node": 20.2.5
     "@types/react": 18.2.9
     autoprefixer: ^10.4.14
